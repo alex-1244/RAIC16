@@ -5,15 +5,15 @@ using Com.CodeGame.CodeWizards2016.DevKit.CSharpCgdk.Helpers;
 
 namespace Com.CodeGame.CodeWizards2016.DevKit.CSharpCgdk
 {
-    public class Point
+    public class Point : Unit
     {
-        public Point(double x, double y)
+        public Point(double x, double y) : base(-1, x, y, 0, 0, 0, Faction.Other)
         {
             this.X = x;
             this.Y = y;
         }
-        public double X;
-        public double Y;
+        public new double X;
+        public new double Y;
     }
     public sealed class MyStrategy : IStrategy
     {
@@ -22,46 +22,26 @@ namespace Com.CodeGame.CodeWizards2016.DevKit.CSharpCgdk
         //public double speed=0;
 
         public static bool isInitialized = false;
-        public static Collider collisionDetector;
+        public static PathDetector pathDetector;
+        public static CollisionResolver collisionResolver;
 
         public void Move(Wizard self, World world, Game game, Move move)
         {
             if (!isInitialized)
             {
                 isInitialized = true;
-                collisionDetector = new Collider();
+                Helpers.Helpers.rand = new Random();
+                pathDetector = new PathDetector();
+                collisionResolver = new CollisionResolver();
             }
             else
             {
-                var nextPoint = collisionDetector.GetNextPoint(self, world, game, move);
-                move.Turn=
+                var nextPoint = pathDetector.GetNextPoint(self, world, game, move);
+                move.Turn = -1 * self.GetAngleTo(nextPoint.X, nextPoint.Y);
+                move.Speed = game.WizardForwardSpeed;
+                collisionResolver.RecordAndAnalyzeStep(self, move);
+                move.Action = ActionType.MagicMissile;
             }
-            //if (world.TickIndex <= changeTick)
-            //{
-            //    move.StrafeSpeed = speed;
-            //}
-            //history.Add(new Point() { x = self.X, y = self.Y });
-            //if (history.Count > 20)
-            //{
-            //    if (self.GetDistanceTo(history[history.Count - 10].x, history[history.Count - 10].y) < 5)
-            //    {
-            //        changeTick = world.TickIndex + 30;
-            //        move.StrafeSpeed = game.WizardStrafeSpeed;
-            //        speed = game.WizardStrafeSpeed;
-            //    }
-            //}
-            var angleTo = self.GetAngleTo(4000, 0);
-            var selfAngle = self.Angle;
-            var neededAngle = -1 * (selfAngle - angleTo) + 0.25;
-            if (!(Math.Abs(selfAngle - angleTo) < 0.5))
-            {
-                move.Turn = neededAngle;
-            }
-
-            move.Speed = game.WizardForwardSpeed;
-            //move.StrafeSpeed = game.WizardStrafeSpeed;
-            //move.Turn = game.WizardMaxTurnAngle;
-            move.Action = ActionType.MagicMissile;
         }
     }
 }
