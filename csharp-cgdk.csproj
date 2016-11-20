@@ -72,6 +72,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\Collider.cs" />
+    <Compile Include="Helpers\Helpers.cs" />
+    <Compile Include="Helpers\PointWithHist.cs" />
     <Compile Include="Model\ActionType.cs" />
     <Compile Include="Model\Bonus.cs" />
     <Compile Include="Model\BonusType.cs" />
